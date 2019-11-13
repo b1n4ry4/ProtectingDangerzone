@@ -1,0 +1,9 @@
+R1
+#config t
+(config-ifinterface fa0/0
+(config-if)#ip add 10.0.0.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#logging host 10.0.0.100
+(config)#logging trap 7
+
