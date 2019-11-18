@@ -1,0 +1,55 @@
+R1:
+#conf t
+(config)#interface fa0/0
+(config-if)#ip add 192.168.1.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#interface fa1/0
+(config-if)#ip add 1.1.1.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#ip route 2.2.2.0 255.255.255.0 1.1.1.2
+(config)#interface tunnel 0
+(config-if)#ip add 50.0.0.1 255.255.255.252
+(config-if)#tunnel mode gre ip
+(config-if)#tunnel source 1.1.1.1
+(config-if)#tunnel destination 2.2.2.1
+(config-if)#exit
+(config)#exit
+#copy running-config startup-config
+
+R2:
+#conf t
+(config)#interface fa0/0
+(config-if)#ip add 1.1.1.2 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#interface fa1/0
+(config-if)#ip add 2.2.2.2 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#exit
+#copy running-config startup-config
+
+R3:
+#conf t
+(config)#interface fa0/0
+(config-if)#ip add 10.0.0.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#interface fa1/0
+(config-if)#ip add 2.2.2.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#ip route 1.1.1.0 255.255.255.0 2.2.2.2
+(config)#interface tunnel 0
+(config-if)#ip add 50.0.0.2 255.255.255.252
+(config-if)#tunnel mode gre ip
+(config-if)#tunnel source 2.2.2.1
+(config-if)#tunnel destination 1.1.1.1
+(config-if)#exit
+(config)#exit
+#copy running-config startup-config
+
+PC1> ip add 192.168.1.2
+PC2> ip add 10.0.0.2
