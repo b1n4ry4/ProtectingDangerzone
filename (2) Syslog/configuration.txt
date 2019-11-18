@@ -1,0 +1,30 @@
+R1
+#config t
+(config-ifinterface fa0/0
+(config-if)#ip add 10.0.0.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#logging host 10.0.0.100
+(config)#logging trap 7
+
+(config)#interface fa1/0
+(config-if)#ip add 11.0.0.1 255.255.255.0
+(config-if)#no shut
+(config-if)#exit
+(config)#logging host 10.0.0.100
+(config)#logging trap 7
+
+R2
+#config t
+(config)#interface fa0/0
+(config-if)#ip add 10.0.0.2 255.255.255.0
+(config-if)#no shut
+(config-if)#exit
+(config)#ip route 0.0.0.0 0.0.0.0 11.0.0.1
+(config)#logging host 10.0.0.100
+(config)#logging trap 7
+
+PC
+add a static route in cmd (as administrator)
+route add 11.0.0.0 mask 255.255.0.0 10.0.0.1 -p
+test: ping other subnets (example 11.0.0.1 and 11.0.0.2)
