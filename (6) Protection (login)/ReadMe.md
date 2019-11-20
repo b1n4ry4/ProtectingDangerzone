@@ -1,0 +1,1 @@
+Protection (bruteforce attacks, local login, remote login, privilege login protection, protection login with username and password, ecryption, min pass lenth, timeout, blocking attempts, permit network, login delay).
