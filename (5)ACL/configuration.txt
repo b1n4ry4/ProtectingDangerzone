@@ -1,0 +1,65 @@
+PC1:
+ip 192.168.1.50 gateway 192.168.1.1
+PC2:
+ip 192.168.1.100 gateway 192.168.1.1
+PC3:
+ip 192.168.0.50 gateway 192.168.0.1
+PC4:
+ip 192.168.0.100 gateway 192.168.0.1
+PC5:
+ip 10.0.0.50 gateway 10.0.0.1
+PC6:
+ip 10.0.0.100 gateway 10.0.0.1
+
+R1:
+#conf t
+(config)#inter fa0/0
+(config-if)#ip add 192.168.1.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#inter fa1/0
+(config-if)#ip add 192.168.0.1 255.255.255.0
+(config-if)#no shut
+(config-if)#exit
+(config)#inter e3/0
+(config-if)#ip add 10.0.0.1 255.255.255.0
+(config-if)#no shut
+(config-if)#exit
+(config)#access-list 1 deny 192.168.0.0 0.0.0.255
+(config)#access-list 1 permit any
+(config)#interface e3/0
+(config-if)#ip access-group 1 out
+(config-if)#exit
+(config)#ip access-list extended 101
+(config-ext-nacl)#deny icmp 192.168.0.50 0.0.0.0 192.168.1.50 0.0.0.0
+(config-ext-nacl)#permit icmp any any
+(config-ext-nacl)#exit
+(config)#inter fa0/0
+(config-if)#ip access-group 101 out
+(config-if)#exit
+(config)#ip access-list extended 102
+(config-ext-nacl)#deny icmp host 192.168.1.50 0.0.0.0 192.168.0.50 0.0.0.0
+(config-ext-nacl)#deny icmp host 10.0.0.50 0.0.0.0 192.168.0.50 0.0.0.0
+(config-ext-nacl)#permit icmp any any
+(config-ext-nacl)#exit
+(config)#interface fa1/0
+(config-if)#ip access-group 102 out
+(config-if)#end
+#copy running-configuration startup configuration
+
+ACL1:
+(config)#access-list 1 deny 192.168.0.0 0.0.0.255
+(config)#access-list 1 permit any
+
+ACL2:
+(config)#ip access-list extended 101
+(config-ext-nacl)#deny icmp 192.168.0.50 0.0.0.0 192.168.1.50 0.0.0.0
+(config-ext-nacl)#permit icmp any any
+
+ACL3:
+(config)#ip access-list extended 102
+(config-ext-nacl)#deny icmp host 192.168.1.50 0.0.0.0 192.168.0.50 0.0.0.0
+(config-ext-nacl)#deny icmp host 10.0.0.50 0.0.0.0 192.168.0.50 0.0.0.0
+(config-ext-nacl)#permit icmp any any
+
+
