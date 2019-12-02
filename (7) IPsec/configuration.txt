@@ -1,0 +1,161 @@
+R1:
+#conf t
+(config)#interface fa0/0
+(config-if)#ip add 192.168.1.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#interface fa1/0
+(config-if)#ip add 10.1.1.2 255.255.255.252
+(config-if)#no shutdown
+(config-if)#exit
+(config)#router ospf 13
+(config-router)#network 192.168.1.0 0.0.0.255 area 0
+(config-router)#network 10.1.1.0 0.0.0.3 area 0
+(config-router)#exit
+(config)#line console 0
+(config-line)#password ciscoconpa55
+(config-line)#login
+(config-line)#exit
+(config)#line vty 0 4
+(config-line)#password ciscovtypa55
+(config-line)#login
+(config-line)#exit
+(config)##service password-encryption
+(config)#enable secret ciscoenpa55
+(config)#username SSHadmin secret ciscosshpa55
+(config)#line vty 0 4
+(config-line)#login local
+(config)#access-list 110 permit ip 192.168.1.0 0.0.0.255 192.168.3.0 0.0.0.255
+(config)#interface fa0/0
+(config-if)#ip access-group 110 out
+(config-if)#exit
+*phase 1*
+(config)#crypto isakmp policy 10
+(config-isakmp)#encryption aes256
+(config-isakmp)#authentication pre-share
+(config-isakmp)#group 5
+(config-isakmp)#exit
+(config)#crypto isakmp key vpnpa55 address 10.2.2.2
+*phase 2*
+*a*
+(config)#crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+(cfg-crypto-trans)#exit
+*b*
+(config)#crypto map VPN-MAP 10 ipsec-isakmp
+(config-crypto-map)#description *description* +VPN connection to R3+
+(config-crypto-map)#set peer 10.2.2.2
+(config-crypto-map)#set transform-set VPN-SET
+(config-crypto-map)#match address 110
+(config-crypto-map)#exit
+*apply*
+(config)#interface fa1/0
+(config-if)#crypto map VPN-MAP
+(config-if)#exit
+(config)#exit
+#copy running-config startup-config
+
+
+R2:
+#conf t
+(config)#interface fa0/0
+(config-if)#ip add 192.168.2.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#interface fa1/0
+(config-if)#ip add 10.1.1.1 255.255.255.252
+(config-if)#no shutdown
+(config-if)#exit
+(config)#interface g2/0
+(config-if)#ip add 10.2.2.1 255.255.255.252
+(config-if)#no shutdown
+(config-if)#exit
+(config)#router ospf 13
+(config-router)#network 10.2.2.0 0.0.0.3 area 0
+(config-router)#network 10.1.1.0 0.0.0.3 area 0
+(config-router)#network 192.168.2.0 0.0.0.255 area 0
+(config-router)#exit
+(config)#line console 0
+(config-line)#password ciscoconpa55
+(config-line)#login
+(config-line)#exit
+(config)#line vty 0 4
+(config-line)#password ciscovtypa55
+(config-line)#login
+(config-line)#exit
+(config)##service password-encryption
+(config)#enable secret ciscoenpa55
+(config)#username SSHadmin secret ciscosshpa55
+(config)#line vty 0 4
+(config-line)#login local
+(config-line)#exit
+(config)#exit
+#copy running-config startup-config
+
+
+R3:
+#conf t
+(config)#interface fa0/0
+(config-if)#ip add 192.168.3.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#interface g2/0
+(config-if)#ip add 10.2.2.2 255.255.255.252
+(config-if)#no shutdown
+(config-if)#exit
+(config)#router ospf 13
+(config-router)#network 192.168.3.0 0.0.0.255 area 0
+(config-router)#network 10.2.2.0 0.0.0.3 area 0
+(config-router)#exit
+(config)#line console 0
+(config-line)#password ciscoconpa55
+(config-line)#login
+(config-line)#exit
+(config)#line vty 0 4
+(config-line)#password ciscovtypa55
+(config-line)#login
+(config-line)#exit
+(config)#service password-encryption
+(config)#enable secret ciscoenpa55
+(config)#username SSHadmin secret ciscosshpa55
+(config)#line vty 0 4
+(config-line)#login local
+(config-line)#exit
+(config)#access-list 110 permit ip 192.168.3.0 0.0.0.255 192.168.1.0 0.0.0.255
+(config)#interface fa0/0
+(config-if)#ip access-group 110 out
+(config-if)#exit
+*phase 1*
+(config)#crypto isakmp policy 10
+(config-isakmp)#encryption aes 256
+(config-isakmp)#authentication pre-share
+(config-isakmp)#group 5
+(config-isakmp)#exit
+(config)#crypto isakmp key vpnpa55 address 10.1.1.2
+*phase 2*
+*a*
+(config)#crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+(cfg-crypto-trans)#exit
+*b*
+(config)#crypto map VPN-MAP 10 ipsec-isakmp
+(config-crypto-map)#description *description* +VPN connection to R1+
+(config-crypto-map)#set peer 10.1.1.2
+(config-crypto-map)#set transform-set VPN-SET
+(config-crypto-map)#match address 110
+(config-crypto-map)#exit
+*apply*
+(config)#interface g2/0
+(config-if)#crypto map VPN-MAP
+(config-if)#exit
+(config)#exit
+#copy running-config startup-config
+
+
+
+PC1:
+ip 192.168.1.3 gateway 192.168.1.1
+
+PC2:
+ip 192.168.3.3 gateway 192.168.3.1
+
+PC3:
+ip 192.168.2.3 gateway 192.168.2.1
