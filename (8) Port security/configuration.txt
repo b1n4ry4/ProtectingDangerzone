@@ -1,0 +1,39 @@
+S1:
+>enable
+#conf t
+(config)#inter g0/1
+(config-if)#switchport mode access
+(config-if)#switchport port-security 
+(config-if)#sw port-sec max 1
+(config-if)#sw port-security viol restrict
+(config-if)#sw port-security mac-address sticky
+(config-if)#exit
+
+(config)#inter gi0/2
+(config-if)#switchport mode access
+(config-if)#swi port-security 
+(config-if)#sw port-security max 1
+(config-if)#sw port-security viol shutdown
+(config-if)#sw port-security mac-address sticky
+(config-if)#exit
+
+(config)#inter g0/3
+(config-if)#switchport mode access 
+(config-if)#switchport port-security 
+(config-if)#switchport port-security max 1
+(config-if)#sw port-security violation protect 
+(config-if)#sw port-security mac-address sticky
+(config-if)#exit
+(config)#exit
+
+#copy running-config startup-config
+
+
+R1:
+#conf t
+(config)#inter f0/0
+(config-if)#ip add 192.168.1.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#exit
+(config)#exit
+#copy running-config startup-config
