@@ -1,1 +1,1 @@
-IPsec conf
+IPsec configuration
