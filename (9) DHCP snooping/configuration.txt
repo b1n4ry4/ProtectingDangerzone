@@ -1,0 +1,57 @@
+R1:
+R1#conf t
+R1(config)#hostname attacker
+attacker(config)#int f0/0
+attacker(config-if)#ip add 192.168.0.100 255.255.255.0
+attacker(config-if)#no shutdown
+attacker(config-if)#ip dhcp pool attacker
+attacker(dhcp-config)#network 192.168.0.0 255.255.255.0
+attacker(dhcp-config)#exit
+attacker(config)#exit
+attacker#copy running-config startup-config
+
+
+R2:
+R2#conf t
+R2(config)#hostname DHCP
+DHCP(config)#inter f0/0
+DHCP(config-if)#ip add 192.168.0.254 255.255.255.0
+DHCP(config-if)#no shutdown
+DHCP(config-if)#exit
+DHCP(config)#ip dhcp pool MyPool
+DHCP(dhcp-config)#network 192.168.0.0 255.255.255.0
+DHCP(dhcp-config)#exit
+DHCP(config)#exit
+DHCP#copy running-config startup-config
+
+
+
+R3:
+R3#conf t
+R3(config)#hostname client
+client(config)#interface fa0/0
+client(config-if)#ip add dhcp
+client(config-if)#no shutdown
+client(config-if)#exit
+client(config)#exit
+client#copy running-config startup-config
+
+
+SW:
+Switch>en
+Switch#conf t
+Switch(config)#ip dhcp snooping
+Switch(config)#no ip dhcp snooping information option
+Switch(config)#ip dhcp snooping vlan 1
+Switch(config)#inter gi0/1
+Switch(config-if)#ip dhcp snooping trust
+Switch(config-if)#exit
+Switch(config)#inter gi0/0
+Switch(config-if)#ip dhcp snooping limit rate 10
+Switch(config-if)#exit
+
+Switch(config)#sh ip dhcp snooping
+Switch(config)#sh ip dhcp snooping binding
+
+Switch(config)#exit
+Switch#copy running-config startup-config
