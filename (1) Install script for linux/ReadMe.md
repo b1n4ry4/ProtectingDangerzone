@@ -10,3 +10,5 @@ LINUX ONLY:
 Edit-Preferences
 General-tab Console applications
 -Edit-choose-Xfce4-terminal
+
+VM required
